@@ -257,4 +257,4 @@ async def announce(ctx):
 #end of announcement
 
 #bot run
-client.run('ODA5MTA2ODU2Njg5NDAxODY2.YCQRew.yW4CCzBC22hiah_uoCUxw5HlPHo')
+client.run('token')
