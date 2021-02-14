@@ -1,17 +1,57 @@
 import discord
 from discord.ext import commands
 
-client = commands.Bot(command_prefix = 'e!')
+client = commands.Bot(command_prefix = 'e!', help_command = None)
+
 
 @client.event
 async def on_ready():
     print('bot bread')
 
+#Help menu
 
+@client.group(invoke_without_command = True)
+async def help(ctx):
+    help = discord.Embed(title = "This is the help window.", description = "Send e!help <command> to get more information on a specific command.", color = discord.Color.red() )
+    help.add_field(name = "helpwindow", value = "Opens this help window.", inline = False)
+    help.add_field(name = "test", value = "Random crap test code.",  inline = False)
+    help.add_field(name = "emojiret", value = "Returns a message with type and number of each reactions to a specific message.", inline = False)
+    help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
+    help.add_field(name = "clear", value = "Deletes messages.", inline = False)
+
+    await ctx.send(embed = help)
+
+@help.command()
+async def test(ctx):
+    help_test = discord.Embed(title = "test", description = "This is a bunch of random test code. All waste. Do anything.", color = discord.Color.red())
+    await ctx.send(embed = help_test)
+
+@help.command()
+async def emojiret(ctx):
+    help_emojiret = discord.Embed(title = "emojiret", description = "This command returns a message with the number and type of reactions a message has. The message at question is the one being replied to", color = discord.Color.red())
+    await ctx.send(embed = help_emojiret)
+
+@help.command()
+async def announce(ctx):
+    help_announce = discord.Embed(title = "announce", description = "This command opens the announcement wizard which lets you make announcements and post it in formatted form as an embedded messsage.", color = discord.Color.red())
+    await ctx.send(embed = help_announce)
+
+@help.command()
+async def clear(ctx):
+    help_clear = discord.Embed(title = "clear", description = "Deletes messages. Default : 10 messages are deleted. To delete custom number of messages use e!clear <number>", color = discord.Color.red())
+    await ctx.send(embed = help_clear)
+
+#end of Help menu
+
+#Clear
 
 @client.command()
-async def clear(ctx, count=10):
-    await ctx.channel.purge(limit=count)
+async def clear(ctx, count=(10+1)):
+    await ctx.channel.purge(limit = count+1)
+
+#end of Clear
+
+#Test
 
 @client.command()
 async def test(ctx):
@@ -28,6 +68,10 @@ async def test(ctx):
     embed.set_footer(text="THIS IS ME SHAMILLLLL!!", icon_url=ctx.author.avatar_url)
     await ctx.send(embed=embed)
 
+#end of Test
+
+#emojiret
+
 @client.command()
 async def emojiret(ctx):
     messageid = ctx.message.reference.message_id
@@ -41,6 +85,9 @@ async def emojiret(ctx):
 
     await ctx.send(embed=result)
 
+#end of emojiret
+
+#announce
 
 @client.command()
 async def announce(ctx):
@@ -207,7 +254,7 @@ async def announce(ctx):
 
     await ctx.send(embed = announcement)
 
+#end of announcement
 
-
-
-client.run('ODA5MTA2ODU2Njg5NDAxODY2.YCQRew.VIw0nWDd_RKGt2uLV3skQ56DMdQ')
+#bot run
+client.run('ODA5MTA2ODU2Njg5NDAxODY2.YCQRew.yW4CCzBC22hiah_uoCUxw5HlPHo')
