@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import os
 
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
@@ -257,4 +258,4 @@ async def announce(ctx):
 #end of announcement
 
 #bot run
-client.run('token')
+client.run(os.getenv('TOKEN'))
