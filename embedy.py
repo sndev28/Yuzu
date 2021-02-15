@@ -24,6 +24,7 @@ async def help(ctx):
     help.add_field(name = "test", value = "Random crap test code.",  inline = False)
     help.add_field(name = "emojiret", value = "Returns a message with type and number of each reactions to a specific message.", inline = False)
     help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
+    help.add_field(name = "rolesret", value = "Lists all the roles in the server", inline = False)
     help.add_field(name = "clear", value = "Deletes messages.", inline = False)
 
     await ctx.send(embed = help)
@@ -48,6 +49,12 @@ async def clear(ctx):
     help_clear = discord.Embed(title = "clear", description = "Deletes messages. Default : 10 messages are deleted. To delete custom number of messages use e!clear <number>", color = discord.Color.red())
     await ctx.send(embed = help_clear)
 
+@help.command()
+async def rolesret(ctx):
+    help_rolesret = discord.Embed(title = "rolesret", description = "This command returns all the roles in the discord server.", color = discord.Color.red())
+    await ctx.send(embed = help_rolesret)
+
+
 #end of Help menu
 
 
@@ -63,6 +70,15 @@ async def clear(ctx, count=(10+1)):
 
 @client.command()
 async def mini(ctx):
+
+    print("mini")
+
+#end of minitest
+
+#Minitest
+
+@client.command()
+async def rolesret(ctx):
 
     rolestring = "Roles : \n"
 
