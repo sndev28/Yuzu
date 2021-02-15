@@ -5,6 +5,12 @@ import os
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
 
+class colordetail :
+    def __init__(self, value, name, command : discord.Color):
+        self.value = value
+        self.name = name
+        self.command = command
+
 @client.event
 async def on_ready():
     print('bot bread')
@@ -53,11 +59,23 @@ async def clear(ctx, count=(10+1)):
 
 #end of Clear
 
+#Minitest
+
+@client.command()
+async def mini(ctx):
+    val = discord.Color.blue().value
+
+    print(str(val))
+
+#end of test
+
 #Test
 
 @client.command()
 async def test(ctx):
-    embed = discord.Embed(title = "This is a  test embed, Love cats", url = "https://www.instagram.com/p/CLO4sfIpk0z/?utm_source=ig_web_copy_link", description = "Cats are the best in the world. Go kill yourself if you dont like cats.", color = discord.Color.blue())
+
+    redcolor = colordetail(name = "red",command = discord.Color.red())
+    embed = discord.Embed(title = "This is a  test embed, Love cats", url = "https://www.instagram.com/p/CLO4sfIpk0z/?utm_source=ig_web_copy_link", description = "Cats are the best in the world. Go kill yourself if you dont like cats.", color = redcolor.command)
 
     embed.set_author(name=ctx.author.display_name, url = "https://www.instagram.com/shamil_niyas/", icon_url=ctx.author.avatar_url)
 
@@ -98,10 +116,42 @@ async def announce(ctx):
     thumbflag = 0
     fieldflag = 0
 
+
+    colorlist = []
+    colorlist.append(colordetail(value = 1, name = "blue", command = discord.Color.blue()))
+    colorlist.append(colordetail(value = 2, name = "blurple", command = discord.Color.blurple()))
+    colorlist.append(colordetail(value = 3, name = "dark blue", command = discord.Color.dark_blue()))
+    colorlist.append(colordetail(value = 4, name = "dark gold", command = discord.Color.dark_gold()))
+    colorlist.append(colordetail(value = 5, name = "dark gray", command = discord.Color.dark_gray()))
+    colorlist.append(colordetail(value = 6, name = "dark green", command = discord.Color.dark_green()))
+    colorlist.append(colordetail(value = 7, name = "dark grey", command = discord.Color.dark_grey()))
+    colorlist.append(colordetail(value = 8, name = "dark magenta", command = discord.Color.dark_magenta()))
+    colorlist.append(colordetail(value = 9, name = "dark orange", command = discord.Color.dark_orange()))
+    colorlist.append(colordetail(value = 10, name = "dark purple", command = discord.Color.dark_purple()))
+    colorlist.append(colordetail(value = 11, name = "dark red", command = discord.Color.dark_red()))
+    colorlist.append(colordetail(value = 12, name = "dark teal", command = discord.Color.dark_teal()))
+    colorlist.append(colordetail(value = 14, name = "darker grey", command = discord.Color.darker_grey()))
+    colorlist.append(colordetail(value = 13, name = "darker gray", command = discord.Color.darker_gray()))
+    colorlist.append(colordetail(value = 16, name = "green", command = discord.Color.green()))
+    colorlist.append(colordetail(value = 15, name = "gold", command = discord.Color.gold()))
+    colorlist.append(colordetail(value = 17, name = "greyple", command = discord.Color.greyple()))
+    colorlist.append(colordetail(value = 18, name = "light gray", command = discord.Color.light_gray()))
+    colorlist.append(colordetail(value = 19, name = "light grey", command = discord.Color.light_grey()))
+    colorlist.append(colordetail(value = 21, name = "lighter grey", command = discord.Color.lighter_grey()))
+    colorlist.append(colordetail(value = 20, name = "lighter gray", command = discord.Color.lighter_gray()))
+    colorlist.append(colordetail(value = 22, name = "magenta", command = discord.Color.magenta()))
+    colorlist.append(colordetail(value = 23, name = "orange", command = discord.Color.orange()))
+    colorlist.append(colordetail(value = 24, name = "purple", command = discord.Color.purple()))
+    colorlist.append(colordetail(value = 25, name = "red", command = discord.Color.red()))
+    colorlist.append(colordetail(value = 26, name = "teal", command = discord.Color.teal()))
+    colorlist.append(colordetail(value = 27, name = "random", command = discord.Color.random()))
+
+
+
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel
 
-    authorprompt = discord.Embed(title = "Do you want to show author in your announcement?", description = "Like Embedy is the author for this message. Please answer y/n. Any other response will be taken as a yes.", colour = discord.Color.red())
+    authorprompt = discord.Embed(title = "Do you want to show author in your announcement?", description = "Like Embedy is the author for this message. Please answer y/n. Any other response will be taken as a yes.", color = discord.Color.red())
     authorprompt.set_author(name = "Embedy", icon_url = "https://drive.google.com/uc?export=view&id=1VzkSsM7ALQG9zta8IOX0b-mrGpdHZPhA")
     await ctx.send(embed = authorprompt)
 
@@ -117,7 +167,7 @@ async def announce(ctx):
     if(authorres.content == 'n'):
         authorflag = 0
 
-    thumbprompt = discord.Embed(title = "Do you want to show thumbnail in your announcement?", description = "Like the thumbnail on the upper left corner of this message. Please answer y/n. Any other response will be taken as a no.", colour = discord.Color.red())
+    thumbprompt = discord.Embed(title = "Do you want to show thumbnail in your announcement?", description = "Like the thumbnail on the upper left corner of this message. Please answer y/n. Any other response will be taken as a no.", color = discord.Color.red())
     thumbprompt.set_thumbnail(url = "https://c-sf.smule.com/rs-s49/arr/71/9f/be656761-ab54-4064-8a92-b410d73118fe_1024.jpg")
 
     await ctx.send(embed = thumbprompt)
@@ -160,7 +210,29 @@ async def announce(ctx):
         return
 
 
-    announcement = discord.Embed(title = str(titleres.content), description = str(descres.content), colour = discord.Color.green())
+    colorprompt = discord.Embed(title = "Which color do you want your embed to be?", description = "<---- This color is what I mean. Enter the index of the color.", color = discord.Color.red())
+    for obj in colorlist:
+        colorstring = str(obj.value) + " " + str(obj.name)
+        colorprompt.add_field(name = colorstring, value = '\u200b', inline = False)
+
+    await ctx.send(embed = colorprompt)
+
+    try :
+        colorres = await client.wait_for('message', check = check, timeout = 300.0)
+        await ctx.channel.purge(limit = 2)
+
+    except asyncio.TimeoutError:
+        await ctx.send("Sorry, you didn't reply in time!")
+        return
+
+    finalcolorobj = colordetail(name = "dummy", value = 0, command = discord.Color.random())
+
+    for obj in colorlist:
+        if obj.value == int(colorres.content):
+            finalcolorobj = obj
+
+
+    announcement = discord.Embed(title = str(titleres.content), description = str(descres.content), color = finalcolorobj.command)
 
     if (authorflag == 1):
         announcement.set_author(name = ctx.author.display_name, icon_url = ctx.author.avatar_url)
@@ -185,9 +257,8 @@ async def announce(ctx):
 
     if (fieldres.content == 'y'):
         fieldflag = 1
-        print("check1")
-        fieldtitle = discord.Embed(title = "Enter the title of the field",color = discord.Colour.red() )
-        fielddetail = discord.Embed(title = "Enter the details of the field",color = discord.Colour.red() )
+        fieldtitle = discord.Embed(title = "Enter the title of the field",color = discord.Color.red() )
+        fielddetail = discord.Embed(title = "Enter the details of the field",color = discord.Color.red() )
 
     while (fieldflag == 1) :
         fieldflag = 0
@@ -238,7 +309,7 @@ async def announce(ctx):
     footerdescription = "Mention the roles to be mentioned in your message. \n" + rolestring
 
 
-    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", descritption = str(footerdescription), colour = discord.Color.red())
+    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", descritption = str(footerdescription), color = discord.Color.red())
     await ctx.send(embed = footerprompt)
 
     try :
@@ -251,7 +322,6 @@ async def announce(ctx):
 
 
     announcement.set_footer(text = str(roleres.content))
-
 
 
     await ctx.send(embed = announcement)
