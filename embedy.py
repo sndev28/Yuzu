@@ -61,6 +61,7 @@ async def rolesret(ctx):
 #Clear
 
 @client.command()
+@commands.has_permissions(administrator = True)
 async def clear(ctx, count=(10+1)):
     await ctx.channel.purge(limit = count+1)
 
@@ -101,8 +102,7 @@ async def rolesret(ctx):
 @client.command()
 async def test(ctx):
 
-    redcolor = colordetail(name = "red",command = discord.Color.red())
-    embed = discord.Embed(title = "This is a  test embed, Love cats", url = "https://www.instagram.com/p/CLO4sfIpk0z/?utm_source=ig_web_copy_link", description = "Cats are the best in the world. Go kill yourself if you dont like cats.", color = redcolor.command)
+    embed = discord.Embed(title = "This is a  test embed, Love cats", url = "https://www.instagram.com/p/CLO4sfIpk0z/?utm_source=ig_web_copy_link", description = "Cats are the best in the world. Go kill yourself if you dont like cats.", color = discord.Color.red())
 
     embed.set_author(name=ctx.author.display_name, url = "https://www.instagram.com/shamil_niyas/", icon_url=ctx.author.avatar_url)
 
@@ -112,7 +112,7 @@ async def test(ctx):
     embed.add_field(name = "I hate rats", value="BWaaah all rats can die for all I care..!!")
 
 
-    embed.set_footer(text="THIS IS ME SHAMILLLLL!!", icon_url=ctx.author.avatar_url)
+    embed.set_footer(text="#lovecats #cats #catslove #catsbest", icon_url="https://static01.nyt.com/images/2020/04/22/science/22VIRUS-PETCATS1/22VIRUS-PETCATS1-mediumSquareAt3X.jpg")
     await ctx.send(embed=embed)
 
 #end of Test
