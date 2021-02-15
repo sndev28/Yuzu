@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 
-client = commands.Bot(command_prefix = 'et!', help_command = None)
+client = commands.Bot(command_prefix = 'e!', help_command = None)
 
 
 @client.event
@@ -14,7 +14,7 @@ async def on_ready():
 @client.group(invoke_without_command = True)
 async def help(ctx):
     help = discord.Embed(title = "This is the help window.", description = "Send e!help <command> to get more information on a specific command.", color = discord.Color.red() )
-    help.add_field(name = "helpwindow", value = "Opens this help window.", inline = False)
+    help.add_field(name = "help", value = "Opens this help window.", inline = False)
     help.add_field(name = "test", value = "Random crap test code.",  inline = False)
     help.add_field(name = "emojiret", value = "Returns a message with type and number of each reactions to a specific message.", inline = False)
     help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
@@ -43,24 +43,6 @@ async def clear(ctx):
     await ctx.send(embed = help_clear)
 
 #end of Help menu
-
-#rRestart bot
-
-@client.commmand()
-async def restart(ctx):
-    restartprompt = discord.Embed(title = "Do you want to restart the bot?", description = "Restarting the bot will load the any changes in the code. Send y for restarting. Anyother choice will be considered no.", color = discord.Color.red())
-    await ctx.send(embed = restartprompt)
-
-    try :
-        restartres = await client.wait_for('message', check = check, timeout = 300.0)
-        await ctx.channel.purge(limit = 2)
-
-    except asyncio.TimeoutError :
-        await ctx.send("Sorry, You didnt reply in time!")
-        return
-
-    if(restartres.content == 'y'):
-        refresh
 
 
 #Clear
@@ -277,4 +259,4 @@ async def announce(ctx):
 #end of announcement
 
 #bot run
-client.run("ODEwNzU5MTE4NTk1MDMxMDkx.YCoURQ.5wU7PsTmn2NTKu2RPH3onQkjoM8")
+client.run(os.getenv('TOKEN'))
