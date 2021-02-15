@@ -81,19 +81,17 @@ async def mini(ctx):
 @client.command()
 async def rolesret(ctx):
 
-    rolestring = "Roles : \n"
+    rolestring = ""
 
-    tomention = ctx.guild.roles
-    for mentionable in tomention :
+    givenroles = ctx.guild.roles
+    for mentionable in givenroles :
         rolestring = rolestring + str(mentionable.name) + "\n"
 
-    footerdescription = "Mention the roles to be mentioned in your message. \n" + rolestring
-
-    footerdescriptionfinal = footerdescription.replace('@', '')
+    rolestringfinal = rolestring.replace('@', '')
 
 
-    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", description = str(footerdescriptionfinal), color = discord.Color.red())
-    await ctx.send(embed = footerprompt)
+    roleprompt = discord.Embed(title = "Roles in this server", description = str(rolestringfinal), color = discord.Color.red())
+    await ctx.send(embed = roleprompt)
 
 #end of minitest
 
