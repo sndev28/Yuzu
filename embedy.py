@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import os
 
-client = commands.Bot(command_prefix = 'e!', help_command = None)
+client = commands.Bot(command_prefix = 'et!', help_command = None)
 
 
 @client.event
@@ -277,4 +277,4 @@ async def announce(ctx):
 #end of announcement
 
 #bot run
-client.run(os.getenv('TOKEN'))
+client.run("ODEwNzU5MTE4NTk1MDMxMDkx.YCoURQ.5wU7PsTmn2NTKu2RPH3onQkjoM8")
