@@ -63,11 +63,22 @@ async def clear(ctx, count=(10+1)):
 
 @client.command()
 async def mini(ctx):
-    val = discord.Color.blue().value
 
-    print(str(val))
+    rolestring = "Roles : \n"
 
-#end of test
+    tomention = ctx.guild.roles
+    for mentionable in tomention :
+        rolestring = rolestring + str(mentionable.name) + "\n"
+
+    footerdescription = "Mention the roles to be mentioned in your message. \n" + rolestring
+
+    footerdescriptionfinal = footerdescription.replace('@', '')
+
+
+    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", description = str(footerdescriptionfinal), color = discord.Color.red())
+    await ctx.send(embed = footerprompt)
+
+#end of minitest
 
 #Test
 
@@ -304,12 +315,14 @@ async def announce(ctx):
 
     tomention = ctx.guild.roles
     for mentionable in tomention :
-        rolestring += str(mentionable.position) + " " + mentionable.name + "\n"
+        rolestring = rolestring + str(mentionable.name) + "\n"
+
 
     footerdescription = "Mention the roles to be mentioned in your message. \n" + rolestring
 
+    footerdescriptionfinal = footerdescription.replace('@', '')
 
-    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", descritption = str(footerdescription), color = discord.Color.red())
+    footerprompt = discord.Embed(title = "Who all do you want to address with this announcement?", description = str(footerdescriptionfinal), color = discord.Color.red())
     await ctx.send(embed = footerprompt)
 
     try :
