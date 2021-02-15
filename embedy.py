@@ -44,6 +44,25 @@ async def clear(ctx):
 
 #end of Help menu
 
+#rRestart bot
+
+@client.commmand()
+async def restart(ctx):
+    restartprompt = discord.Embed(title = "Do you want to restart the bot?", description = "Restarting the bot will load the any changes in the code. Send y for restarting. Anyother choice will be considered no.", color = discord.Color.red())
+    await ctx.send(embed = restartprompt)
+
+    try :
+        restartres = await client.wait_for('message', check = check, timeout = 300.0)
+        await ctx.channel.purge(limit = 2)
+
+    except asyncio.TimeoutError :
+        await ctx.send("Sorry, You didnt reply in time!")
+        return
+
+    if(restartres.content == 'y'):
+        refresh
+
+
 #Clear
 
 @client.command()
