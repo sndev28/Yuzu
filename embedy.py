@@ -14,7 +14,7 @@ async def on_ready():
 @client.group(invoke_without_command = True)
 async def help(ctx):
     help = discord.Embed(title = "This is the help window.", description = "Send e!help <command> to get more information on a specific command.", color = discord.Color.red() )
-    help.add_field(name = "helpwindow", value = "Opens this help window.", inline = False)
+    help.add_field(name = "help", value = "Opens this help window.", inline = False)
     help.add_field(name = "test", value = "Random crap test code.",  inline = False)
     help.add_field(name = "emojiret", value = "Returns a message with type and number of each reactions to a specific message.", inline = False)
     help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
