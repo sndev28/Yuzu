@@ -72,7 +72,8 @@ async def clear(ctx, count=(10+1)):
 @client.command()
 async def mini(ctx):
 
-    print("minis")
+    roleprompt = discord.Embed(title = "XO", description = "᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ― \n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ―\n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n", color = discord.Color.red())
+    await ctx.send(embed = roleprompt)
 
 #end of minitest
 
