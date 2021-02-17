@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import os
+import asyncio
 
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
@@ -10,6 +11,12 @@ class colordetail :
         self.value = value
         self.name = name
         self.command = command
+
+class xoplayer :
+    def __init__(self, details : discord.Member, mark):
+        self.details = details
+        self.mark = mark
+
 
 @client.event
 async def on_ready():
@@ -72,7 +79,7 @@ async def clear(ctx, count=(10+1)):
 @client.command()
 async def mini(ctx):
 
-    roleprompt = discord.Embed(title = "XO", description = "᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ― \n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ―\n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n", color = discord.Color.red())
+    roleprompt = discord.Embed(title = "XO", description = "᲼:x:᲼┃᲼᲼᲼᲼┃᲼:x:\n― ― + ― ― + ― ― \n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ―\n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n", color = discord.Color.red())
     await ctx.send(embed = roleprompt)
 
 #end of minitest
@@ -355,6 +362,114 @@ async def announce(ctx):
     await ctx.send(embed = announcement)
 
 #end of announcement
+
+
+#XO game
+
+
+@client.command()
+async def xo(ctx, player : discord.Member) :
+    p1 = xoplayer(ctx.author, ':x:')
+    p2 = xoplayer(player, ':o:')
+
+
+    board = [['᲼᲼','᲼᲼','᲼᲼'],['᲼᲼','᲼᲼','᲼᲼'],['᲼᲼','᲼᲼','᲼᲼']]
+
+    win = 'n'
+
+    currentplayer = p2
+
+    def iswin(board) :
+
+        count = 0
+        flag = 'n'
+
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == '᲼᲼':
+                    count += 1
+
+        if count > 5:
+            return 'n'
+
+        for i in range(3):
+            if ((board[i][0] == board[i][1]) and (board[i][0] == board[i][2])):
+                return board[i][0]
+
+
+        for i in range(3):
+            if ((board[0][i] == board[1][i]) and (board[0][i] == board[2][i])):
+                return board[0][i]
+
+            if (board[0][0] == board[1][1] and board[0][0] == board[2][2]):
+                return board[0][0]
+
+            if(board[0][2] == board[1][1] and board[0][2] == board[2][0]):
+                return board[0][2]
+
+            if count == 0:
+                return 'd'
+
+            return 'n'
+
+
+
+
+    await ctx.channel.purge(limit = 1)
+
+    final = ""
+
+    while win == 'n':
+
+        if currentplayer == p1:
+            currentplayer = p2
+        else :
+            currentplayer = p1
+
+        currentstate = f"᲼{board[0][0]}᲼┃᲼{board[0][1]}᲼┃᲼{board[0][2]}\n― ― + ― ― + ― ― \n᲼{board[1][0]}᲼┃᲼{board[1][1]}᲼┃᲼{board[1][2]}\n― ― + ― ― + ― ―\n᲼{board[2][0]}᲼┃᲼{board[2][1]}᲼┃᲼{board[2][2]}\n"
+        xoprompt = discord.Embed(title = "Where do you want to mark?", description = currentstate + "\n" + currentplayer.details.mention + "play your turn. Enter the row and column numbers seperated by space.", color = discord.Color.red())
+
+        await ctx.send(embed = xoprompt)
+
+        try :
+            xores = await client.wait_for('message', check = lambda message : (message.author.id == currentplayer.details.id and message.channel == ctx.channel), timeout = 60.0)
+            await ctx.channel.purge(limit = 2)
+
+        except asyncio.TimeoutError:
+            await ctx.send("Sorry, you didn't reply in time!")
+            return
+
+
+        mark = xores.content.split(' ')
+
+        board[int(mark[0]) - 1][int(mark[1]) - 1] = currentplayer.mark
+
+        win = iswin(board)
+
+        final = f"᲼{board[0][0]}᲼┃᲼{board[0][1]}᲼┃᲼{board[0][2]}\n― ― + ― ― + ― ― \n᲼{board[1][0]}᲼┃᲼{board[1][1]}᲼┃᲼{board[1][2]}\n― ― + ― ― + ― ―\n᲼{board[2][0]}᲼┃᲼{board[2][1]}᲼┃᲼{board[2][2]}\n"
+
+    result = discord.Embed(title = str("Winner is " + currentplayer.details.mention),description = final, color = discord.Color.green())
+
+    await ctx.send(embed = result)
+
+
+
+
+
+
+
+
+
+
+
+
+#end of XO game
+
+
+
+
+
+
 
 #bot run
 client.run(os.getenv('TOKEN'))
