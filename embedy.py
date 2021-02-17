@@ -72,11 +72,11 @@ async def clear(ctx, count=(10+1)):
 @client.command()
 async def mini(ctx):
 
-    print("mini")
+    print("minis")
 
 #end of minitest
 
-#Minitest
+#Rolesret
 
 @client.command()
 async def rolesret(ctx):
@@ -93,7 +93,7 @@ async def rolesret(ctx):
     roleprompt = discord.Embed(title = "Roles in this server", description = str(rolestringfinal), color = discord.Color.red())
     await ctx.send(embed = roleprompt)
 
-#end of minitest
+#end of rolesret
 
 #Test
 
