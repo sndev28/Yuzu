@@ -32,6 +32,7 @@ async def help(ctx):
     help.add_field(name = "emojiret", value = "Returns a message with type and number of each reactions to a specific message.", inline = False)
     help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
     help.add_field(name = "rolesret", value = "Lists all the roles in the server", inline = False)
+    help.add_field(name = "xo", value = "Play a game of xo or tic tac toe.", inline = False)
     help.add_field(name = "clear", value = "Deletes messages.", inline = False)
 
     await ctx.send(embed = help)
@@ -60,6 +61,11 @@ async def clear(ctx):
 async def rolesret(ctx):
     help_rolesret = discord.Embed(title = "rolesret", description = "This command returns all the roles in the discord server.", color = discord.Color.red())
     await ctx.send(embed = help_rolesret)
+
+@help.command()
+async def xo(ctx):
+    help_xo = discord.Embed(title = "xo", description = "Play a game of tic tac toe or XO with another player. For usage use the command \"e!xo @person_to_play_with\"", color = discord.Color.red())
+    await ctx.send(embed = help_xo)
 
 
 #end of Help menu
