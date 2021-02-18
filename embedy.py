@@ -83,9 +83,11 @@ async def clear(ctx, count=(10+1)):
 #Minitest
 
 @client.command()
-async def mini(ctx):
+async def mini(ctx, player : discord.Member):
 
-    roleprompt = discord.Embed(title = "XO", description = "᲼:x:᲼┃᲼᲼᲼᲼┃᲼:x:\n― ― + ― ― + ― ― \n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n― ― + ― ― + ― ―\n᲼:x:᲼┃᲼:o:᲼┃᲼:x:\n", color = discord.Color.red())
+    xoplayer.details = player
+
+    roleprompt = discord.Embed(title = "XO", description = xoplayer.details.mention, color = discord.Color.red())
     await ctx.send(embed = roleprompt)
 
 #end of minitest
@@ -373,6 +375,7 @@ async def announce(ctx):
 #XO game
 
 
+
 @client.command()
 async def xo(ctx, player : discord.Member) :
     p1 = xoplayer(ctx.author, ':x:')
@@ -416,7 +419,7 @@ async def xo(ctx, player : discord.Member) :
             if count == 0:
                 return 'd'
 
-            return 'n'
+        return 'n'
 
 
 
@@ -454,26 +457,16 @@ async def xo(ctx, player : discord.Member) :
 
         final = f"᲼{board[0][0]}᲼┃᲼{board[0][1]}᲼┃᲼{board[0][2]}\n― ― + ― ― + ― ― \n᲼{board[1][0]}᲼┃᲼{board[1][1]}᲼┃᲼{board[1][2]}\n― ― + ― ― + ― ―\n᲼{board[2][0]}᲼┃᲼{board[2][1]}᲼┃᲼{board[2][2]}\n"
 
-    result = discord.Embed(title = str("Winner is " + currentplayer.details.mention),description = final, color = discord.Color.green())
+    if win == 'd':
+        result = discord.Embed(title = str(f"The match is a draw!!" ),description = final + f"\n\nGG {p1.details.mentions} and {p2.details.mentions}", color = discord.Color.green())
+
+    else :
+        result = discord.Embed(title = str("The game is over!! "),description = final + "\nThe winner is " + currentplayer.details.mention + " !!", color = discord.Color.green())
 
     await ctx.send(embed = result)
 
 
-
-
-
-
-
-
-
-
-
-
 #end of XO game
-
-
-
-
 
 
 
