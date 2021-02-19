@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import os
 import asyncio
+from PIL import Image
+import io
 
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
@@ -16,6 +18,38 @@ class xoplayer :
     def __init__(self, details : discord.Member, mark):
         self.details = details
         self.mark = mark
+
+class xotable :
+    def __init__(self, tableurl, xurl, ourl ):
+        self.tableurl = tableurl
+        self.xurl = xurl
+        self.ourl = ourl
+
+    table = Image.Image()
+    x = Image.Image()
+    o = Image.Image()
+
+    def initialize():
+
+        table = Image.open(tableurl)
+        x = Image.open(xurl)
+        o = Image.open(ourl)
+
+
+
+
+    def update(mark, pos):
+        coodtable = [[(17,21),(237,21),(453,21)],[(17,241),(237,241),(453,241)],[(17,455),(237,455),(453,455)]]
+
+        updatecood = coodtable[pos[0]][pos[1]]
+
+        if mark == x:
+            table.paste(x, updatecood)
+
+        else :
+            table.paste(o, updatecood)
+
+        return
 
 
 @client.event
@@ -381,6 +415,8 @@ async def xo(ctx, player : discord.Member) :
     p1 = xoplayer(ctx.author, ':x:')
     p2 = xoplayer(player, ':o:')
 
+    #currentstate = xotable(tableurl = "https://drive.google.com/uc?export=view&id=1h45Tq1JnwzJWc2cRyUSfOshjVPhc06Le", xurl = "https://drive.google.com/uc?export=view&id=1xDvRT08ZcUBRIYFw9r5pMv1kbb6fqU39", ourl = "https://drive.google.com/uc?export=view&id=19ZmqcNJJmHc_h5LQp_bRcBb9Xx9ANHJ2")
+    currentstate = xotable(tableurl = "template.png", xurl = "x.png", ourl = "o.png")
 
     board = [['᲼᲼','᲼᲼','᲼᲼'],['᲼᲼','᲼᲼','᲼᲼'],['᲼᲼','᲼᲼','᲼᲼']]
 
@@ -410,14 +446,14 @@ async def xo(ctx, player : discord.Member) :
             if ((board[0][i] == board[1][i]) and (board[0][i] == board[2][i])):
                 return board[0][i]
 
-        if (board[0][0] == board[1][1] and board[0][0] == board[2][2]):
-            return board[0][0]
+            if (board[0][0] == board[1][1] and board[0][0] == board[2][2]):
+                return board[0][0]
 
-        if(board[0][2] == board[1][1] and board[0][2] == board[2][0]):
-            return board[0][2]
+            if(board[0][2] == board[1][1] and board[0][2] == board[2][0]):
+                return board[0][2]
 
-        if count == 0:
-            return 'd'
+            if count == 0:
+                return 'd'
 
         return 'n'
 
@@ -435,8 +471,17 @@ async def xo(ctx, player : discord.Member) :
         else :
             currentplayer = p1
 
-        currentstate = f"᲼{board[0][0]}᲼┃᲼{board[0][1]}᲼┃᲼{board[0][2]}\n― ― + ― ― + ― ― \n᲼{board[1][0]}᲼┃᲼{board[1][1]}᲼┃᲼{board[1][2]}\n― ― + ― ― + ― ―\n᲼{board[2][0]}᲼┃᲼{board[2][1]}᲼┃᲼{board[2][2]}\n"
-        xoprompt = discord.Embed(title = "Where do you want to mark?", description = currentstate + "\n" + currentplayer.details.mention + "play your turn. Enter the row and column numbers seperated by space.", color = discord.Color.red())
+
+        xoprompt = discord.Embed(title = "Where do you want to mark?", description = "Enter the row and column numbers seperated by space.", color = discord.Color.red())
+
+        arr = io.BytesIO()
+        currentstate.table.save(arr, format='PNG')
+        arr.seek(0)
+        file = discord.File(arr)
+
+        await channel.send("content", file=file)
+
+        xoprompt.add_field(name = "Play your move : ", value = currentplayer.details.mention, inline = False)
 
         await ctx.send(embed = xoprompt)
 
@@ -450,18 +495,27 @@ async def xo(ctx, player : discord.Member) :
 
 
         mark = xores.content.split(' ')
+        sendmark = [int(mark[0]) - 1, int(mark[1]) - 1]
 
         board[int(mark[0]) - 1][int(mark[1]) - 1] = currentplayer.mark
 
+        currentstate.update(pos = sendmark)
+
         win = iswin(board)
 
-        final = f"᲼{board[0][0]}᲼┃᲼{board[0][1]}᲼┃᲼{board[0][2]}\n― ― + ― ― + ― ― \n᲼{board[1][0]}᲼┃᲼{board[1][1]}᲼┃᲼{board[1][2]}\n― ― + ― ― + ― ―\n᲼{board[2][0]}᲼┃᲼{board[2][1]}᲼┃᲼{board[2][2]}\n"
 
     if win == 'd':
-        result = discord.Embed(title = str(f"The match is a draw!!" ),description = final + f"\n\nGG {p1.details.mention} and {p2.details.mention}", color = discord.Color.green())
+        result = discord.Embed(title = str(f"The match is a draw!!" ),description = f"GG {p1.details.mentions} and {p2.details.mentions}", color = discord.Color.green())
 
     else :
         result = discord.Embed(title = str("The game is over!! "),description = final + "\nThe winner is " + currentplayer.details.mention + " !!", color = discord.Color.green())
+
+    arr = io.BytesIO()
+    currentstate.table.save(arr, format='PNG')
+    arr.seek(0)
+    file = discord.File(arr)
+
+    await channel.send("content", file=file)
 
     await ctx.send(embed = result)
 
