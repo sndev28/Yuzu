@@ -2,6 +2,10 @@ import discord
 from discord.ext import commands
 import os
 import asyncio
+from PIL import Image
+import io
+import time
+import math
 
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
