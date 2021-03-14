@@ -564,7 +564,7 @@ async def countdown(ctx):
 
     deadlinedetails = time.strptime(timeres.content,'%d %b %Y @ %H:%M:%S' )
 
-    deadline = time.mktime(deadlinedetails)
+    deadline = time.mktime(deadlinedetails) - 19800 #subtracted 19800 to match IST time
 
     #initialization message
 
