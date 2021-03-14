@@ -500,7 +500,7 @@ async def countdown(ctx):
             formatstring = formatstring + f":{numbers[int(char)]}:"
 
         if(min == 1):
-            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: "
+            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n:        "
 
         else :
             formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        "
@@ -536,7 +536,7 @@ async def countdown(ctx):
 
     messageprompt = discord.Embed(title = "Countdown wizard", description = "What message do you want me to show with the countdown?", color = discord.Color.red())
 
-    await ctx.send(embed = messageendprompt)
+    await ctx.send(embed = messageprompt)
 
     try:
         messageres = await client.wait_for('message', check = check, timeout = 300.0)
@@ -576,7 +576,7 @@ async def countdown(ctx):
 
     timestring = stringgen(hours, minutes, seconds)
 
-    await ctx.send(messageres.content)
+    await ctx.send(f" ` {messageres.content} ` ")
     initmessage = await ctx.send(timestring)
     finalmessage = await ctx.send("*")
 
@@ -587,8 +587,8 @@ async def countdown(ctx):
 
         if remaining <= 0 :
 
-            await initmessage.edit(content = timestring)
-            await finalmessage.edit(content = f" \n ` {messagedetails[0]} ` {messagedetails[1]}")
+            await initmessage.edit(content = ":zero: :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        :zero: :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        :zero: :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:")
+            await finalmessage.edit(content = f" \n ` {messageenddetails[0]} ` {messageenddetails[1]}")
             break
 
         else:
