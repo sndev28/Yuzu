@@ -534,10 +534,9 @@ async def countdown(ctx):
         await ctx.send("Sorry, you didn't reply in time!")
         return
 
-    messageprompt = discord.Embed(title = "Countdown wizard", description = "What message do you want me to send at the end of the countdown? Anyone to be mentioned can be added to this message as well at the end of the message seperated by a |", color = discord.Color.red())
-    messageprompt.add_field(name = "Example", value = "Hi everyone, this is the end of the countdown | @mentions", inline = False)
+    messageprompt = discord.Embed(title = "Countdown wizard", description = "What message do you want me to show with the countdown?", color = discord.Color.red())
 
-    await ctx.send(embed = messageprompt)
+    await ctx.send(embed = messageendprompt)
 
     try:
         messageres = await client.wait_for('message', check = check, timeout = 300.0)
@@ -547,8 +546,21 @@ async def countdown(ctx):
         await ctx.send("Sorry, you didn't reply in time!")
         return
 
+    messageendprompt = discord.Embed(title = "Countdown wizard", description = "What message do you want me to send at the end of the countdown? Anyone to be mentioned can be added to this message as well at the end of the message seperated by a |", color = discord.Color.red())
+    messageendprompt.add_field(name = "Example", value = "Hi everyone, this is the end of the countdown | @mentions", inline = False)
 
-    messagedetails = messageres.content.split('|')
+    await ctx.send(embed = messageendprompt)
+
+    try:
+        messageendres = await client.wait_for('message', check = check, timeout = 300.0)
+        await ctx.channel.purge(limit = 2)
+
+    except asyncio.TimeoutError:
+        await ctx.send("Sorry, you didn't reply in time!")
+        return
+
+
+    messageenddetails = messageendres.content.split('|')
 
     deadlinedetails = time.strptime(timeres.content,'%d %b %Y @ %H:%M:%S' )
 
@@ -564,6 +576,7 @@ async def countdown(ctx):
 
     timestring = stringgen(hours, minutes, seconds)
 
+    await ctx.send(messageres.content)
     initmessage = await ctx.send(timestring)
     finalmessage = await ctx.send("*")
 
