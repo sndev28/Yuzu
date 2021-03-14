@@ -1,1 +1,1 @@
-worker: python embedy.py
+worker: python3 embedy.py
