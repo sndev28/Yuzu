@@ -469,6 +469,131 @@ async def xo(ctx, player : discord.Member) :
 #end of XO game
 
 
+#countdown
+
+@client.command()
+async def countdown(ctx):
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel
+
+    def stringgen(hour, min, sec):
+        formatstring = " "
+
+        numbers = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+
+
+        for char in str(hour):
+            formatstring = formatstring + f":{numbers[int(char)]}:"
+
+        if(hour == 1):
+            formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r:        "
+
+        else :
+            formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        "
+
+
+        for char in str(min):
+            formatstring = formatstring + f":{numbers[int(char)]}:"
+
+        if(min == 1):
+            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: "
+
+        else :
+            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        "
+
+
+        for char in str(sec):
+            formatstring = formatstring + f":{numbers[int(char)]}:"
+
+        if(sec == 1):
+            formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c:"
+
+        else :
+            formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:"
+
+
+        return formatstring
+
+
+
+
+
+    timeprompt = discord.Embed(title = "Countdown wizard", description = "Enter the time to countdown as per the given example. \n 20 Nov 2021 @ 11:23:59", color = discord.Color.red())
+
+    await ctx.send(embed = timeprompt)
+
+    try :
+        timeres =  await client.wait_for('message', check = check, timeout = 300.0)
+        await ctx.channel.purge(limit = 3)
+
+    except asyncio.TimeoutError:
+        await ctx.send("Sorry, you didn't reply in time!")
+        return
+
+    messageprompt = discord.Embed(title = "Countdown wizard", description = "What message do you want me to send at the end of the countdown? Anyone to be mentioned can be added to this message as well at the end of the message seperated by a |", color = discord.Color.red())
+    messageprompt.add_field(name = "Example", value = "Hi everyone, this is the end of the countdown | @mentions", inline = False)
+
+    await ctx.send(embed = messageprompt)
+
+    try:
+        messageres = await client.wait_for('message', check = check, timeout = 300.0)
+        await ctx.channel.purge(limit = 2)
+
+    except asyncio.TimeoutError:
+        await ctx.send("Sorry, you didn't reply in time!")
+        return
+
+
+    messagedetails = messageres.content.split('|')
+
+    deadlinedetails = time.strptime(timeres.content,'%d %b %Y @ %H:%M:%S' )
+
+    deadline = time.mktime(deadlinedetails)
+
+    #initialization message
+
+    remaining = math.trunc(deadline - time.time())
+    totalminutes = math.trunc(remaining/60)
+    hours = math.trunc(totalminutes/60)
+    minutes = totalminutes % 60
+    seconds = remaining % 60
+
+    timestring = stringgen(hours, minutes, seconds)
+
+    initmessage = await ctx.send(timestring)
+    finalmessage = await ctx.send("*")
+
+
+    while(True):
+        remaining = deadline - time.time()
+
+
+        if remaining <= 0 :
+
+            await initmessage.edit(content = timestring)
+            await finalmessage.edit(content = f" \n ` {messagedetails[0]} ` {messagedetails[1]}")
+            break
+
+        else:
+
+            remaining = math.trunc(deadline - time.time())
+            totalminutes = math.trunc(remaining/60)
+            hours = math.trunc(totalminutes/60)
+            minutes = totalminutes % 60
+            seconds = remaining % 60
+
+            timestring = stringgen(hours, minutes, seconds)
+
+            await initmessage.edit(content = timestring)
+
+
+
+
+#end of countdown
+
+
+
 
 #bot run
 client.run(os.getenv('TOKEN'))
