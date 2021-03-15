@@ -480,10 +480,19 @@ async def countdown(ctx):
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel
 
-    def stringgen(hour, min, sec):
+    def stringgen(day, hour, min, sec):
         formatstring = " "
 
         numbers = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+
+        for char in str(day):
+            formatstring = formatstring + f":{numbers[int(char)]}:"
+
+        if(hour == 1):
+            formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y:        "
+
+        else :
+            formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        "
 
 
         for char in str(hour):
@@ -570,11 +579,13 @@ async def countdown(ctx):
 
     remaining = math.trunc(deadline - time.time())
     totalminutes = math.trunc(remaining/60)
-    hours = math.trunc(totalminutes/60)
+    totalhours = math.trunc(totalminutes/60)
     minutes = totalminutes % 60
     seconds = remaining % 60
+    days = math.trunc(totalhours/24)
+    hours = totalhours % 24
 
-    timestring = stringgen(hours, minutes, seconds)
+    timestring = stringgen(days, hours, minutes, seconds)
 
     await ctx.send(f" ` {messageres.content} ` ")
     initmessage = await ctx.send(timestring)
@@ -587,7 +598,7 @@ async def countdown(ctx):
 
         if remaining <= 0 :
 
-            await initmessage.edit(content = ":zero: :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        :zero: :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        :zero: :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:")
+            await initmessage.edit(content = ":zero: :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        :zero: :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        :zero: :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        :zero: :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:")
             await finalmessage.edit(content = f" \n ` {messageenddetails[0]} ` {messageenddetails[1]}")
             break
 
@@ -595,11 +606,13 @@ async def countdown(ctx):
 
             remaining = math.trunc(deadline - time.time())
             totalminutes = math.trunc(remaining/60)
-            hours = math.trunc(totalminutes/60)
+            totalhours = math.trunc(totalminutes/60)
             minutes = totalminutes % 60
             seconds = remaining % 60
+            days = math.trunc(totalhours/24)
+            hours = totalhours % 24
 
-            timestring = stringgen(hours, minutes, seconds)
+            timestring = stringgen(days, hours, minutes, seconds)
 
             await initmessage.edit(content = timestring)
 
