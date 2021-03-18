@@ -1,12 +1,45 @@
+
+
+                                             ###############################################################################
+                                             #                                                                             #
+                                             #                                                                             #
+                                             #                                                                             #
+                                             #                                  YUZU                                       #
+                                             #                                                                             #
+                                             #                        VERSION CODE : 2.69.93                               #
+                                             #                                                                             #
+                                             #                                                                             #
+                                             #                                                                             #
+                                             #                                                                             #
+                                             ###############################################################################
+
+
+
+
 import discord
 from discord.ext import commands
 import os
 import asyncio
+from PIL import Image
 import io
 import time
 import math
+import re
+from urllib.request import Request, urlopen
+import json
 
-client = commands.Bot(command_prefix = 'e!', help_command = None)
+client = commands.Bot(command_prefix = 'y!', help_command = None)
+
+
+
+
+
+
+
+
+
+########################################################################### CLASSES ########################################################################
+
 
 
 class colordetail :
@@ -20,12 +53,158 @@ class xoplayer :
         self.details = details
         self.mark = mark
 
+class xotable :
+    def __init__(self, tableurl, xurl, ourl ):
+        self.tableurl = tableurl
+        self.xurl = xurl
+        self.ourl = ourl
 
-@client.event
-async def on_ready():
-    print('bot bread')
+    table = Image.Image()
+    x = Image.Image()
+    o = Image.Image()
 
-#Help menu
+    def initialize():
+
+        table = Image.open(tableurl)
+        x = Image.open(xurl)
+        o = Image.open(ourl)
+
+
+
+
+    def update(mark, pos):
+        coodtable = [[(17,21),(237,21),(453,21)],[(17,241),(237,241),(453,241)],[(17,455),(237,455),(453,455)]]
+
+        updatecood = coodtable[pos[0]][pos[1]]
+
+        if mark == x:
+            table.paste(x, updatecood)
+
+        else :
+            table.paste(o, updatecood)
+
+        return
+
+
+
+
+
+
+######################################################################## END OF CLASSES ###########################################################################
+
+
+
+
+
+
+
+
+
+########################################################################## FUNCTIONS #####################################################################################
+
+
+async def stringgen(day, hour, min, sec):
+    formatstring = " "
+
+    numbers = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+
+    for char in str(day):
+        formatstring = formatstring + f":{numbers[int(char)]}:"
+
+    if(hour == 1):
+        formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y:        "
+
+    else :
+        formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        "
+
+
+    for char in str(hour):
+        formatstring = formatstring + f":{numbers[int(char)]}:"
+
+    if(hour == 1):
+        formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r:        "
+
+    else :
+        formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        "
+
+
+    for char in str(min):
+        formatstring = formatstring + f":{numbers[int(char)]}:"
+
+    if(min == 1):
+        formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n:        "
+
+    else :
+        formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        "
+
+
+    for char in str(sec):
+        formatstring = formatstring + f":{numbers[int(char)]}:"
+
+    if(sec == 1):
+        formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c:"
+
+    else :
+        formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:"
+
+
+    return formatstring
+
+
+
+async def countdownmanager(time_data):
+
+
+    while(True):
+
+        deadline = time_data['deadline']
+
+
+        remaining = deadline - time.time()
+
+        initmessage = await client.get_channel(time_data['channel_id']).fetch_message(time_data['countdown_id'])
+        finalmessage = await client.get_channel(time_data['channel_id']).fetch_message(time_data['message_id'])
+
+        messageenddetails = time_data['message']
+
+
+        if remaining <= 0 :
+
+            await initmessage.edit(content = ":zero: :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        :zero: :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        :zero: :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        :zero: :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:")
+            await finalmessage.edit(content = f" \n ` {messageenddetails[0]} ` {messageenddetails[1]}")
+            break
+
+        else:
+
+            remaining = math.trunc(deadline - time.time())
+            totalminutes = math.trunc(remaining/60)
+            totalhours = math.trunc(totalminutes/60)
+            minutes = totalminutes % 60
+            seconds = remaining % 60
+            days = math.trunc(totalhours/24)
+            hours = totalhours % 24
+
+            timestring = await stringgen(days, hours, minutes, seconds)
+
+            await initmessage.edit(content = timestring)
+
+
+
+
+
+
+
+
+
+##########################################################################  COMMANDS #######################################################################################
+
+
+
+
+
+
+
+#------------------------------------------------------------------------ Help menu----------------------------------------------------------------------------
 
 @client.group(invoke_without_command = True)
 async def help(ctx):
@@ -71,31 +250,37 @@ async def xo(ctx):
     await ctx.send(embed = help_xo)
 
 
-#end of Help menu
+#-----------------------------------------------------------------------end of Help menu----------------------------------------------------------------------------
 
 
-#Clear
+
+
+#------------------------------------------------------------------------ clear----------------------------------------------------------------------------
 
 @client.command()
 @commands.has_permissions(administrator = True)
 async def clear(ctx, count=(10+1)):
     await ctx.channel.purge(limit = count+1)
 
-#end of Clear
+#-----------------------------------------------------------------------end of clear----------------------------------------------------------------------------
 
-#Minitest
+
+
+
+#------------------------------------------------------------------------ minitest----------------------------------------------------------------------------
 
 @client.command()
-async def mini(ctx, player : discord.Member):
+async def mini(ctx):
 
-    xoplayer.details = player
+    damn = await ctx.send(":two: :three: :regional_indicator_f:")
+    await damn.add_reaction('▶️')
 
-    roleprompt = discord.Embed(title = "XO", description = xoplayer.details.mention, color = discord.Color.red())
-    await ctx.send(embed = roleprompt)
+#-----------------------------------------------------------------------end of minitest----------------------------------------------------------------------------
 
-#end of minitest
 
-#Rolesret
+
+
+#------------------------------------------------------------------------ rolesret----------------------------------------------------------------------------
 
 @client.command()
 async def rolesret(ctx):
@@ -112,9 +297,12 @@ async def rolesret(ctx):
     roleprompt = discord.Embed(title = "Roles in this server", description = str(rolestringfinal), color = discord.Color.red())
     await ctx.send(embed = roleprompt)
 
-#end of rolesret
+#-----------------------------------------------------------------------end of rolesret----------------------------------------------------------------------------
 
-#Test
+
+
+
+#------------------------------------------------------------------------ test----------------------------------------------------------------------------
 
 @client.command()
 async def test(ctx):
@@ -132,9 +320,12 @@ async def test(ctx):
     embed.set_footer(text="#lovecats #cats #catslove #catsbest", icon_url="https://static01.nyt.com/images/2020/04/22/science/22VIRUS-PETCATS1/22VIRUS-PETCATS1-mediumSquareAt3X.jpg")
     await ctx.send(embed=embed)
 
-#end of Test
+#-----------------------------------------------------------------------end of test----------------------------------------------------------------------------
 
-#emojiret
+
+
+
+#------------------------------------------------------------------------ emojiret----------------------------------------------------------------------------
 
 @client.command()
 async def emojiret(ctx):
@@ -149,9 +340,12 @@ async def emojiret(ctx):
 
     await ctx.send(embed=result)
 
-#end of emojiret
+#-----------------------------------------------------------------------end of emojiret----------------------------------------------------------------------------
 
-#announce
+
+
+
+#------------------------------------------------------------------------ announce----------------------------------------------------------------------------
 
 @client.command()
 async def announce(ctx):
@@ -372,10 +566,15 @@ async def announce(ctx):
 
     await ctx.send(embed = announcement)
 
-#end of announcement
 
 
-#XO game
+#-----------------------------------------------------------------------end of announcement---------------------------------------------------------------------------
+
+
+
+
+
+#------------------------------------------------------------------------ XO Game----------------------------------------------------------------------------
 
 
 
@@ -469,63 +668,20 @@ async def xo(ctx, player : discord.Member) :
     await ctx.send(embed = result)
 
 
-#end of XO game
+
+#-----------------------------------------------------------------------end of XO game---------------------------------------------------------------------------
 
 
-#countdown
+
+
+
+#------------------------------------------------------------------------ countdown-----------------------------------------------------------------------
 
 @client.command()
 async def countdown(ctx):
 
     def check(msg):
         return msg.author == ctx.author and msg.channel == ctx.channel
-
-    def stringgen(day, hour, min, sec):
-        formatstring = " "
-
-        numbers = ("zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
-
-        for char in str(day):
-            formatstring = formatstring + f":{numbers[int(char)]}:"
-
-        if(hour == 1):
-            formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y:        "
-
-        else :
-            formatstring = formatstring + " :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        "
-
-
-        for char in str(hour):
-            formatstring = formatstring + f":{numbers[int(char)]}:"
-
-        if(hour == 1):
-            formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r:        "
-
-        else :
-            formatstring = formatstring + " :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        "
-
-
-        for char in str(min):
-            formatstring = formatstring + f":{numbers[int(char)]}:"
-
-        if(min == 1):
-            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n:        "
-
-        else :
-            formatstring = formatstring + " :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        "
-
-
-        for char in str(sec):
-            formatstring = formatstring + f":{numbers[int(char)]}:"
-
-        if(sec == 1):
-            formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c:"
-
-        else :
-            formatstring = formatstring + " :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:"
-
-
-        return formatstring
 
 
 
@@ -573,7 +729,7 @@ async def countdown(ctx):
 
     deadlinedetails = time.strptime(timeres.content,'%d %b %Y @ %H:%M:%S' )
 
-    deadline = time.mktime(deadlinedetails) - 19800 #subtracted 19800 to match IST time
+    deadline = time.mktime(deadlinedetails)
 
     #initialization message
 
@@ -585,43 +741,302 @@ async def countdown(ctx):
     days = math.trunc(totalhours/24)
     hours = totalhours % 24
 
-    timestring = stringgen(days, hours, minutes, seconds)
+    timestring = await stringgen(days, hours, minutes, seconds)
 
     await ctx.send(f" ` {messageres.content} ` ")
     initmessage = await ctx.send(timestring)
     finalmessage = await ctx.send("*")
 
+    time_data = {}
 
-    while(True):
-        remaining = deadline - time.time()
+    time_data['channel_id'] = ctx.channel.id
+    time_data['countdown_id'] = initmessage.id
+    time_data['message_id'] = finalmessage.id
+    time_data['deadline'] = deadline
+    time_data['message'] = messageenddetails
+
+    with open('stored_data.json', 'r') as file:
+        edit_data = json.load(file)
+
+    edit_data['countdown'].append(time_data)
+
+    with open('stored_data.json', 'w') as file:
+        json.dump(edit_data, file, indent = 2)
+
+    asyncio.create_task(countdownmanager(time_data))
 
 
-        if remaining <= 0 :
 
-            await initmessage.edit(content = ":zero: :regional_indicator_d: :regional_indicator_a: :regional_indicator_y: :regional_indicator_s:        :zero: :regional_indicator_h: :regional_indicator_r: :regional_indicator_s:        :zero: :regional_indicator_m: :regional_indicator_i: :regional_indicator_n: :regional_indicator_s:        :zero: :regional_indicator_s: :regional_indicator_e: :regional_indicator_c: :regional_indicator_s:")
-            await finalmessage.edit(content = f" \n ` {messageenddetails[0]} ` {messageenddetails[1]}")
+
+
+
+
+#----------------countdown restart
+
+
+async def countdownrestart():
+
+    with open('stored_data.json', 'r') as file:
+        countdownlist = json.load(file)
+
+    for time_data in countdownlist['countdown']:
+        asyncio.create_task(countdownmanager(time_data))
+
+
+
+
+
+
+
+
+
+
+#-------------end of coutndown restart
+
+
+
+
+
+
+#-----------------------------------------------------------------------end of countdown---------------------------------------------------------------------------
+
+
+
+
+#------------------------------------------------------------------------ creepy----------------------------------------------------------------------------
+
+@client.command()
+async def creepy(ctx):
+
+    ncrtochar = {'&#8211;':'–', '&#8212;':'—', '&#8216;':'‘', '&#8217;':'’', '&#8218;':'‚', '&#8220;':'“', '&#8221;':'”', '&#8222;':'„', '&#8224;':'†', '&#8225;':'‡', '&#8226;':'•', '&#8230;':'…', '&#8240;':'‰', '&#8364;':'€', '&#8482;':'™'  }
+
+    url = Request("https://www.creepypasta.com/random/", headers={'User-Agent': 'Mozilla/5.0'})
+
+    page_object = urlopen(url)
+
+    page = page_object.read().decode("utf8")
+
+
+    pagetitle = re.findall("<title>.*?</title>", page)[0][7:-22]
+
+
+
+    cut = re.findall("<p>.*?</p>", page)
+
+    finalindex = -1
+
+    for i in range(len(cut)):
+        if cut[i][3:9].lower() == "credit":
+            finalindex = i
             break
 
-        else:
+    unedittedstory = cut[0:finalindex]
 
-            remaining = math.trunc(deadline - time.time())
-            totalminutes = math.trunc(remaining/60)
-            totalhours = math.trunc(totalminutes/60)
-            minutes = totalminutes % 60
-            seconds = remaining % 60
-            days = math.trunc(totalhours/24)
-            hours = totalhours % 24
+    story = " "
 
-            timestring = stringgen(days, hours, minutes, seconds)
-
-            await initmessage.edit(content = timestring)
+    for string in unedittedstory:
+        story = story + string[3:-4] + "\n"
 
 
+    formattedstory = re.sub("<.*?>", "\n", story)
+
+    while(re.search("&#.*?;", formattedstory) != None):
+        instance = re.search("&#.*?;",formattedstory).start()
+
+        character = formattedstory[instance:instance+7]
+        formattedstory = formattedstory[0:instance] + ncrtochar[character] + formattedstory[instance+7:]
 
 
-#end of countdown
+    noofchars = len(formattedstory)
+
+    noofembeds = int(noofchars / 2000) + 1
+
+    if(noofchars % 2000 == 0):
+        noofembeds -= 1
 
 
+
+
+    if noofchars <= 2000 :
+
+        storyembed = discord.Embed(title = pagetitle, description = formattedstory, color = discord.Color.green())
+        storyembed.set_footer(text = f"Taken from CreepyPasta. Story name : {pagetitle}")
+
+        storymessage = await ctx.send(embed = storyembed)
+
+    else :
+        pointer = 2000
+        previous = 0
+        splitstory = []
+
+        while(pointer < noofchars):
+
+
+            while(formattedstory[pointer] != '.'):
+                pointer -= 1
+
+            splitstory.append(formattedstory[previous+1:pointer+1])
+
+            previous = pointer
+            pointer += 2000
+
+        splitstory.append(formattedstory[previous+1:])
+
+
+        storyembed = discord.Embed(title = pagetitle, description = splitstory[0], color = discord.Color.green())
+
+        storyembed.set_footer(text = f"Page {1}/{noofembeds}. Taken from CreepyPasta. Story name : {pagetitle}")
+
+        storymessage = await ctx.send(embed = storyembed)
+
+        await storymessage.add_reaction('❌')
+        await storymessage.add_reaction('▶️')
+
+        tosave = {}
+        tosave['message_id'] = storymessage.id
+        tosave['currentpage'] = 1
+        tosave['lastpage'] = noofembeds
+        tosave['title'] = pagetitle
+        tosave['story'] = splitstory
+
+        toupdate = {}
+
+        with open('stored_data.json', 'r') as file:
+            toupdate = json.load(file)
+
+        toupdate['stories'].append(tosave)
+
+        with open('stored_data.json', 'w') as file:
+            json.dump(toupdate, file, indent=2)
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------end of creepy---------------------------------------------------------------------------
+
+
+
+
+
+
+
+##################################################################### END OF COMMANDS ##########################################################################
+
+
+
+
+####################################################################### EVENTS ################################################################################
+
+
+
+
+
+
+
+
+
+
+#On Ready event
+
+@client.event
+async def on_ready():
+    await countdownrestart()
+    print('bot bread')
+
+
+#end of On Ready event
+
+
+
+
+
+#ReactionEvents
+
+
+@client.event
+async def on_raw_reaction_add(message):
+
+    #creepy
+
+    if not message.member.bot:
+        creepy = {}
+
+        with open('stored_data.json', 'r') as file:
+            creepy = json.load(file)
+
+        for story_object in creepy['stories']:
+            if int(story_object['message_id']) == message.message_id:
+
+                storymessage = await client.get_channel(message.channel_id).fetch_message(message.message_id)
+
+                if str(message.emoji) == '▶️' :
+                    if story_object['currentpage'] != story_object['lastpage']:
+                        story_object['currentpage'] += 1
+
+                elif str(message.emoji) == '◀️' :
+                    if story_object['currentpage'] != 1:
+                        story_object['currentpage'] -= 1
+
+                elif str(message.emoji) == '❌' :
+                    story_object['currentpage'] = 1
+
+
+                await storymessage.clear_reactions()
+
+
+
+                storyembed = discord.Embed(title = story_object['title'], description = story_object['story'][story_object['currentpage']-1], color = discord.Color.green())
+
+                storyembed.set_footer(text = f"Page {story_object['currentpage']}/{story_object['lastpage']}. Taken from CreepyPasta. Story name : {story_object['title']}")
+
+                await storymessage.edit(embed = storyembed)
+
+                if story_object['currentpage'] != 1 and story_object['currentpage'] != story_object['lastpage'] :
+                    await storymessage.add_reaction('❌')
+                    await storymessage.add_reaction('◀️')
+                    await storymessage.add_reaction('▶️')
+
+                elif story_object['currentpage'] == 1 :
+                    await storymessage.add_reaction('❌')
+                    await storymessage.add_reaction('▶️')
+
+                elif story_object['currentpage'] == story_object['lastpage'] :
+                    await storymessage.add_reaction('❌')
+                    await storymessage.add_reaction('◀️')
+
+
+                with open('stored_data.json','w') as file:
+                    json.dump(creepy, file, indent = 2)
+
+
+                return
+
+
+
+
+
+
+    #end of creepy
+
+
+
+
+
+
+#end of Reactionevents
+
+
+
+
+
+
+
+
+############################################################## END OF EVENTS ################################################################################
 
 
 #bot run
