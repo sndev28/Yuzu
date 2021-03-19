@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 2.92.63                               #
+                                             #                        VERSION CODE : 2.92.65                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -741,7 +741,7 @@ async def countdown(ctx):
     with open('stored_data.json', 'w') as file:
         json.dump(edit_data, file, indent = 2)
 
-    asyncio.create_task(countdownmanager(time_data))
+    await countdownmanager(time_data)
 
 
 
