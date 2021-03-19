@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 2.69.93                               #
+                                             #                        VERSION CODE : 2.92.63                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -20,7 +20,6 @@ import discord
 from discord.ext import commands
 import os
 import asyncio
-from PIL import Image
 import io
 import time
 import math
@@ -28,7 +27,7 @@ import re
 from urllib.request import Request, urlopen
 import json
 
-client = commands.Bot(command_prefix = 'y!', help_command = None)
+client = commands.Bot(command_prefix = 'e!', help_command = None)
 
 
 
@@ -52,39 +51,6 @@ class xoplayer :
     def __init__(self, details : discord.Member, mark):
         self.details = details
         self.mark = mark
-
-class xotable :
-    def __init__(self, tableurl, xurl, ourl ):
-        self.tableurl = tableurl
-        self.xurl = xurl
-        self.ourl = ourl
-
-    table = Image.Image()
-    x = Image.Image()
-    o = Image.Image()
-
-    def initialize():
-
-        table = Image.open(tableurl)
-        x = Image.open(xurl)
-        o = Image.open(ourl)
-
-
-
-
-    def update(mark, pos):
-        coodtable = [[(17,21),(237,21),(453,21)],[(17,241),(237,241),(453,241)],[(17,455),(237,455),(453,455)]]
-
-        updatecood = coodtable[pos[0]][pos[1]]
-
-        if mark == x:
-            table.paste(x, updatecood)
-
-        else :
-            table.paste(o, updatecood)
-
-        return
-
 
 
 
@@ -215,6 +181,8 @@ async def help(ctx):
     help.add_field(name = "announce", value = "Lets make an embedded announcement.", inline = False)
     help.add_field(name = "rolesret", value = "Lists all the roles in the server", inline = False)
     help.add_field(name = "xo", value = "Play a game of xo or tic tac toe.", inline = False)
+    help.add_field(name = "countdown", value = "Creates a countdown.", inline = False)
+    help.add_field(name = "creepy", value = "Creepy stories", inline = False)
     help.add_field(name = "clear", value = "Deletes messages.", inline = False)
 
     await ctx.send(embed = help)
@@ -248,6 +216,16 @@ async def rolesret(ctx):
 async def xo(ctx):
     help_xo = discord.Embed(title = "xo", description = "Play a game of tic tac toe or XO with another player. For usage use the command \"e!xo @person_to_play_with\"", color = discord.Color.red())
     await ctx.send(embed = help_xo)
+
+@help.command()
+async def countdown(ctx):
+    help_countdown = discord.Embed(title = "countdown", description = "Creates a countdown to a specified time. You can setup up the message to be shown at the end of the countdown as well.", color = discord.Color.red())
+    await ctx.send(embed = help_countdown)
+
+@help.command()
+async def creepy(ctx):
+    help_creepy = discord.Embed(title = "creepy", description = "Gives you a random creepy story, fresh from CreepyPasta", color = discord.Color.red())
+    await ctx.send(embed = help_creepy)
 
 
 #-----------------------------------------------------------------------end of Help menu----------------------------------------------------------------------------
