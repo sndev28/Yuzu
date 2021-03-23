@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 2.92.65                               #
+                                             #                        VERSION CODE : 2.99.89                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -26,6 +26,7 @@ import math
 import re
 from urllib.request import Request, urlopen
 import json
+import requests
 
 client = commands.Bot(command_prefix = 'e!', help_command = None)
 
@@ -52,6 +53,18 @@ class xoplayer :
         self.details = details
         self.mark = mark
 
+#------------ data file initializations
+
+jsonbinapitoken = os.getenv('jsonbinapitoken')
+jsonbinid = os.getenv('jsonbinid')
+
+
+getheader = { 'X-Master-Key':jsonbinapitoken }
+putheader = { 'X-Master-Key':jsonbinapitoken, 'Content-Type':'application/json' }
+
+
+#------------ end of data file initilizations
+
 
 
 
@@ -67,6 +80,7 @@ class xoplayer :
 
 
 ########################################################################## FUNCTIONS #####################################################################################
+
 
 
 async def stringgen(day, hour, min, sec):
@@ -123,13 +137,13 @@ async def countdownmanager(time_data):
 
     while(True):
 
-        deadline = time_data['deadline']
+        deadline = int(time_data['deadline'])
 
 
         remaining = deadline - time.time()
 
-        initmessage = await client.get_channel(time_data['channel_id']).fetch_message(time_data['countdown_id'])
-        finalmessage = await client.get_channel(time_data['channel_id']).fetch_message(time_data['message_id'])
+        initmessage = await client.get_channel(int(time_data['channel_id'])).fetch_message(int(time_data['countdown_id']))
+        finalmessage = await client.get_channel(int(time_data['channel_id'])).fetch_message(int(time_data['message_id']))
 
         messageenddetails = time_data['message']
 
@@ -153,6 +167,8 @@ async def countdownmanager(time_data):
             timestring = await stringgen(days, hours, minutes, seconds)
 
             await initmessage.edit(content = timestring)
+
+        asyncio.sleep(4)
 
 
 
@@ -707,7 +723,7 @@ async def countdown(ctx):
 
     deadlinedetails = time.strptime(timeres.content,'%d %b %Y @ %H:%M:%S' )
 
-    deadline = time.mktime(deadlinedetails)
+    deadline = math.trunc(time.mktime(deadlinedetails))
 
     #initialization message
 
@@ -727,19 +743,17 @@ async def countdown(ctx):
 
     time_data = {}
 
-    time_data['channel_id'] = ctx.channel.id
-    time_data['countdown_id'] = initmessage.id
-    time_data['message_id'] = finalmessage.id
-    time_data['deadline'] = deadline
+    time_data['channel_id'] = str(ctx.channel.id)
+    time_data['countdown_id'] = str(initmessage.id)
+    time_data['message_id'] = str(finalmessage.id)
+    time_data['deadline'] = str(deadline)
     time_data['message'] = messageenddetails
 
-    with open('stored_data.json', 'r') as file:
-        edit_data = json.load(file)
+    edit_data = json.loads(requests.get(f"https://api.jsonbin.io/v3/b/{jsonbinid}/latest", headers = getheader).text)["record"]
 
     edit_data['countdown'].append(time_data)
 
-    with open('stored_data.json', 'w') as file:
-        json.dump(edit_data, file, indent = 2)
+    requests.put(f"https://api.jsonbin.io/v3/b/{jsonbinid}", json = edit_data, headers = putheader)
 
     await countdownmanager(time_data)
 
@@ -754,8 +768,9 @@ async def countdown(ctx):
 
 async def countdownrestart():
 
-    with open('stored_data.json', 'r') as file:
-        countdownlist = json.load(file)
+
+    countdownlist = json.loads(requests.get(f"https://api.jsonbin.io/v3/b/{jsonbinid}/latest", headers = getheader).text)["record"]
+
 
     for time_data in countdownlist['countdown']:
         asyncio.create_task(countdownmanager(time_data))
@@ -801,7 +816,7 @@ async def creepy(ctx):
 
     cut = re.findall("<p>.*?</p>", page)
 
-    finalindex = -1
+    finalindex = len(cut)
 
     for i in range(len(cut)):
         if cut[i][3:9].lower() == "credit":
@@ -871,7 +886,7 @@ async def creepy(ctx):
         await storymessage.add_reaction('▶️')
 
         tosave = {}
-        tosave['message_id'] = storymessage.id
+        tosave['message_id'] = str(storymessage.id)
         tosave['currentpage'] = 1
         tosave['lastpage'] = noofembeds
         tosave['title'] = pagetitle
@@ -879,13 +894,11 @@ async def creepy(ctx):
 
         toupdate = {}
 
-        with open('stored_data.json', 'r') as file:
-            toupdate = json.load(file)
+        toupdate = json.loads(requests.get(f"https://api.jsonbin.io/v3/b/{jsonbinid}/latest", headers = getheader).text)["record"]
 
         toupdate['stories'].append(tosave)
 
-        with open('stored_data.json', 'w') as file:
-            json.dump(toupdate, file, indent=2)
+        requests.put(f"https://api.jsonbin.io/v3/b/{jsonbinid}", json = toupdate, headers = putheader)
 
 
 
@@ -922,6 +935,7 @@ async def creepy(ctx):
 
 @client.event
 async def on_ready():
+    await client.wait_until_ready()
     await countdownrestart()
     print('bot bread')
 
@@ -943,13 +957,15 @@ async def on_raw_reaction_add(message):
     if not message.member.bot:
         creepy = {}
 
-        with open('stored_data.json', 'r') as file:
-            creepy = json.load(file)
+
+        creepy = json.loads(requests.get(f"https://api.jsonbin.io/v3/b/{jsonbinid}/latest", headers = getheader).text)["record"]
 
         for story_object in creepy['stories']:
+
+
             if int(story_object['message_id']) == message.message_id:
 
-                storymessage = await client.get_channel(message.channel_id).fetch_message(message.message_id)
+                storymessage = await client.get_channel(int(message.channel_id)).fetch_message(int(message.message_id))
 
                 if str(message.emoji) == '▶️' :
                     if story_object['currentpage'] != story_object['lastpage']:
@@ -987,8 +1003,7 @@ async def on_raw_reaction_add(message):
                     await storymessage.add_reaction('◀️')
 
 
-                with open('stored_data.json','w') as file:
-                    json.dump(creepy, file, indent = 2)
+                requests.put(f"https://api.jsonbin.io/v3/b/{jsonbinid}", json = creepy, headers = putheader)
 
 
                 return
