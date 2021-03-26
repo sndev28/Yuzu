@@ -171,7 +171,7 @@ async def countdownmanager(time_data):
 
             await initmessage.edit(content = timestring)
 
-        asyncio.sleep(4)
+        await asyncio.sleep(4)
 
 
 
