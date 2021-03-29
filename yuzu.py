@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 3.09.53                               #
+                                             #                        VERSION CODE : 3.16.87                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -29,13 +29,25 @@ import json
 import requests
 import importlib
 import file
+from bs4 import BeautifulSoup
 
 
-client = commands.Bot(command_prefix = 'e!', help_command = None)
+client = commands.Bot(command_prefix = os.getenv('prefix'), help_command = None)
 
 
 
 
+########################################################################### ASSETS ########################################################################
+
+
+
+
+emojinumbers = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
+
+
+
+
+########################################################################### END OF ASSETS #################################################################
 
 
 
@@ -171,7 +183,7 @@ async def countdownmanager(time_data):
 
             await initmessage.edit(content = timestring)
 
-        await asyncio.sleep(4)
+        asyncio.sleep(4)
 
 
 
@@ -977,6 +989,46 @@ async def runcode(ctx):
 
 
 #-----------------------------------------------------------------------end of dispython---------------------------------------------------------------------------
+
+
+
+#----------------------------------------------------------------------------cricket-------------------------------------------------------------------------------
+
+@client.command()
+async def cricket(ctx):
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel
+
+    url = 'https://www.cricbuzz.com/cricket-match/live-scores'
+
+    page = BeautifulSoup(requests.get(url).text, 'lxml')
+
+    live = page.find('div', class_ = 'cb-col cb-col-100 cb-rank-tabs')
+
+    live_matches = live.find_all('div', class_ = 'cb-mtch-lst cb-col cb-col-100 cb-tms-itm')
+
+    matches = discord.Embed(title = 'Live cricket matches : ', description = 'React to the index of the match you want to follow.', color = discord.Color.green())
+
+    for index, item in enumerate(live_matches):
+        pieces = item.find_all('div', class_ = 'cb-col-100 cb-col cb-schdl')
+
+        teams = pieces[1].find_all('div', class_ = 'cb-ovr-flo cb-hmscg-tm-nm')
+        score = pieces[1].find_all('div', class_ = 'cb-ovr-flo')
+        live_status = pieces[1].find('div', class_ = 'cb-text-live')
+
+        matches.add_field(name = str(index+1) + '.' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{live_status.text}')
+
+    matches_message = await ctx.send(embed = matches)
+
+    for index, item in enumerate(live_matches):
+        if index > 8:
+            break
+
+        await matches_message.add_reaction(emojinumbers[index+1])
+
+
+
 
 
 
