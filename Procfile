@@ -1,1 +1,1 @@
-worker: python3 embedy.py
+worker: python3 yuzu.py
