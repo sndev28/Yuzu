@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 3.16.89                               #
+                                             #                        VERSION CODE : 3.23.42                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -183,7 +183,7 @@ async def countdownmanager(time_data):
 
             await initmessage.edit(content = timestring)
 
-        asyncio.sleep(4)
+        await asyncio.sleep(4)
 
 
 
@@ -198,6 +198,79 @@ async def run(ctx, client):
     except Exception as err:
         await ctx.send('```Error :\n' + str(err) + '```')
 
+
+
+
+async def cricketlive(given_match_name, message):
+
+
+    while(True):
+
+        url = 'https://www.cricbuzz.com/cricket-match/live-scores'
+
+        page = BeautifulSoup(requests.get(url).text, 'lxml')
+
+        live = page.find('div', class_ = 'cb-col cb-col-100 cb-rank-tabs')
+
+        live_matches = live.find_all('div', class_ = 'cb-mtch-lst cb-col cb-col-100 cb-tms-itm')
+
+
+
+        for item in live_matches:
+
+            pieces = item.find_all('div', class_ = 'cb-col-100 cb-col cb-schdl')
+
+            match_name = pieces[0].h3.text.strip()
+
+            if given_match_name == match_name:
+                teams = pieces[1].find_all('div', class_ = 'cb-ovr-flo cb-hmscg-tm-nm')
+                score = pieces[1].find_all('div', class_ = 'cb-ovr-flo')
+                live_status = pieces[1].find('div', class_ = 'cb-text-live')
+                complete_status = pieces[1].find('div', class_ = 'cb-text-complete')
+
+                if complete_status:
+                    status = complete_status
+
+                    match = discord.Embed(title = 'Live Match : \n' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , description = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}', color = discord.Color.green())
+
+                    await message.edit(embed = match)
+
+                    return
+                else :
+                    status = live_status
+
+                match = discord.Embed(title = 'Live Match : \n' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , description = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}', color = discord.Color.green())
+
+                await message.edit(embed = match)
+
+                break
+
+        await asyncio.sleep(45)
+
+
+
+
+
+
+
+    matches = discord.Embed(title = 'Live cricket matches : ', description = 'React to the index of the match you want to follow.', color = discord.Color.green())
+
+    for index, item in enumerate(live_matches):
+        pieces = item.find_all('div', class_ = 'cb-col-100 cb-col cb-schdl')
+
+        teams = pieces[1].find_all('div', class_ = 'cb-ovr-flo cb-hmscg-tm-nm')
+        score = pieces[1].find_all('div', class_ = 'cb-ovr-flo')
+        live_status = pieces[1].find('div', class_ = 'cb-text-live')
+        complete_status = pieces[1].find('div', class_ = 'cb-text-complete')
+
+        if complete_status:
+            status = complete_status
+        else :
+            status = live_status
+
+        matches.add_field(name = str(index+1) + '. ' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}')
+
+    matches_message = await ctx.send(embed = matches)
 
 
 
@@ -1028,10 +1101,26 @@ async def cricket(ctx):
     matches_message = await ctx.send(embed = matches)
 
     for index, item in enumerate(live_matches):
+        match_name = item.find_all('div', class_ = 'cb-col-100 cb-col cb-schdl')[0].h3.text.strip()
+        cricdata = {'messageid': str(matches_message.id), 'index' : index, 'match_name' : match_name}
+
+        with open('stored_data.json', 'r') as file :
+            data = json.load(file)
+
+        data['cricket'].append(cricdata)
+
+        with open('stored_data.json', 'w') as file :
+            json.dump(data, file, indent = 2)
+
+    for index, item in enumerate(live_matches):
         if index > 8:
             break
 
         await matches_message.add_reaction(emojinumbers[index+1])
+
+
+
+
 
 
 
@@ -1140,6 +1229,44 @@ async def on_raw_reaction_add(message):
 
 
     #end of creepy
+
+    #cricket
+    if not message.member.bot:
+
+        with open('stored_data.json', 'r') as file:
+            cricdata = json.load(file)["cricket"]
+
+        for index, emoji in enumerate(emojinumbers):
+            if str(message.emoji) == emoji:
+                break
+
+        for match in cricdata:
+            if match['messageid'] == str(message.message_id):
+                if match['index'] == index - 1:
+                    break
+
+        initializing = discord.Embed(title = 'Match Initializing... ', description = 'Will be ready in a moment...', color = discord.Color.green())
+
+        initmessage = await client.get_channel(int(message.channel_id)).send(embed = initializing)
+
+        asyncio.create_task(cricketlive(match['match_name'], initmessage))
+
+        with open('stored_data.json', 'r') as file:
+            data = json.load(file)
+
+        for index, match in enumerate(data['cricket']):
+            if match['messageid'] == str(message.message_id):
+                del data['cricket'][index]
+
+        with open('stored_data.json', 'w') as file:
+            json.dump(data, file, indent = 2)
+
+
+
+
+
+
+    #end of cricket
 
 
 
