@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 3.23.42                               #
+                                             #                        VERSION CODE : 3.23.43                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
