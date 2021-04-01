@@ -253,31 +253,6 @@ async def cricketlive(given_match_name, message):
 
 
 
-    matches = discord.Embed(title = 'Live cricket matches : ', description = 'React to the index of the match you want to follow.', color = discord.Color.green())
-
-    for index, item in enumerate(live_matches):
-        pieces = item.find_all('div', class_ = 'cb-col-100 cb-col cb-schdl')
-
-        teams = pieces[1].find_all('div', class_ = 'cb-ovr-flo cb-hmscg-tm-nm')
-        score = pieces[1].find_all('div', class_ = 'cb-ovr-flo')
-        live_status = pieces[1].find('div', class_ = 'cb-text-live')
-        complete_status = pieces[1].find('div', class_ = 'cb-text-complete')
-
-        if complete_status:
-            status = complete_status
-        else :
-            status = live_status
-
-        matches.add_field(name = str(index+1) + '. ' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}')
-
-    matches_message = await ctx.send(embed = matches)
-
-
-
-
-
-
-
 ##########################################################################  COMMANDS #######################################################################################
 
 
@@ -1245,21 +1220,22 @@ async def on_raw_reaction_add(message):
                 if match['index'] == index - 1:
                     break
 
-        initializing = discord.Embed(title = 'Match Initializing... ', description = 'Will be ready in a moment...', color = discord.Color.green())
+        if match :
+            initializing = discord.Embed(title = 'Match Initializing... ', description = 'Will be ready in a moment...', color = discord.Color.green())
 
-        initmessage = await client.get_channel(int(message.channel_id)).send(embed = initializing)
+            initmessage = await client.get_channel(int(message.channel_id)).send(embed = initializing)
 
-        asyncio.create_task(cricketlive(match['match_name'], initmessage))
+            asyncio.create_task(cricketlive(match['match_name'], initmessage))
 
-        with open('stored_data.json', 'r') as file:
-            data = json.load(file)
+            with open('stored_data.json', 'r') as file:
+                data = json.load(file)
 
-        for index, match in enumerate(data['cricket']):
-            if match['messageid'] == str(message.message_id):
-                del data['cricket'][index]
+            for index, match in enumerate(data['cricket']):
+                if match['messageid'] == str(message.message_id):
+                    del data['cricket'][index]
 
-        with open('stored_data.json', 'w') as file:
-            json.dump(data, file, indent = 2)
+            with open('stored_data.json', 'w') as file:
+                json.dump(data, file, indent = 2)
 
 
 
