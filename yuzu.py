@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 3.23.43                               #
+                                             #                        VERSION CODE : 3.23.49                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -1215,12 +1215,15 @@ async def on_raw_reaction_add(message):
             if str(message.emoji) == emoji:
                 break
 
+        flag = False
+
         for match in cricdata:
             if match['messageid'] == str(message.message_id):
                 if match['index'] == index - 1:
+                    flag = True
                     break
 
-        if match :
+        if flag :
             initializing = discord.Embed(title = 'Match Initializing... ', description = 'Will be ready in a moment...', color = discord.Color.green())
 
             initmessage = await client.get_channel(int(message.channel_id)).send(embed = initializing)
