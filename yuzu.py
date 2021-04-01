@@ -6,7 +6,7 @@
                                              #                                                                             #
                                              #                                  YUZU                                       #
                                              #                                                                             #
-                                             #                        VERSION CODE : 3.23.49                               #
+                                             #                        VERSION CODE : 3.24.50                               #
                                              #                                                                             #
                                              #                                                                             #
                                              #                                                                             #
@@ -236,8 +236,20 @@ async def cricketlive(given_match_name, message):
                     await message.edit(embed = match)
 
                     return
-                else :
+
+                elif live_status :
                     status = live_status
+
+                else :
+                    status = preview_status = pieces[1].find('span', class_ = 'cb-text-preview')
+
+                    match = discord.Embed(title = 'Live Match : \n' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , description = status.text, color = discord.Color.green())
+
+                    await message.edit(embed = match)
+
+                    return
+
+
 
                 match = discord.Embed(title = 'Live Match : \n' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , description = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}', color = discord.Color.green())
 
@@ -1065,13 +1077,22 @@ async def cricket(ctx):
         score = pieces[1].find_all('div', class_ = 'cb-ovr-flo')
         live_status = pieces[1].find('div', class_ = 'cb-text-live')
         complete_status = pieces[1].find('div', class_ = 'cb-text-complete')
+        
 
-        if complete_status:
-            status = complete_status
+        if complete_status or live_status:
+            if complete_status :
+                status = complete_status
+            else :
+                status = live_status
+
+            matches.add_field(name = str(index+1) + '. ' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}')
+
         else :
-            status = live_status
+            status = preview_status = pieces[1].find('span', class_ = 'cb-text-preview')
+            matches.add_field(name = str(index+1) + '. ' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = status.text)
 
-        matches.add_field(name = str(index+1) + '. ' + pieces[0].h3.text.strip() + pieces[0].span.text.strip() , value = f'{teams[0].text}    {score[2].text}\n{teams[1].text}    {score[4].text}\n{status.text}')
+
+        
 
     matches_message = await ctx.send(embed = matches)
 
