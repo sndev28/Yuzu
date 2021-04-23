@@ -1,4 +1,4 @@
-Welcome to the Embedy Discord Bot.
+Welcome to the Yuzu Discord Bot.
 
 This bot can :
 
