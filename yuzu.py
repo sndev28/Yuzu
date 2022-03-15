@@ -347,6 +347,17 @@ async def clear(ctx, count=(10+1)):
 
 
 
+@client.command()
+async def anonymous(ctx):
+
+    data=requests.get(ctx.message.attachments[0].url).content
+    data_bytes = io.BytesIO(data)
+
+    await ctx.channel.send(file=discord.File(data_bytes, ctx.message.attachments[0].filename))
+
+    await ctx.message.delete()
+
+
 
 #------------------------------------------------------------------------ minitest----------------------------------------------------------------------------
 
